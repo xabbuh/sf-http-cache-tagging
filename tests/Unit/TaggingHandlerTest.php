@@ -1,0 +1,244 @@
+<?php
+
+namespace DTL\Symfony\HttpCacheTagging\Tests\Unit;
+
+use Symfony\Component\HttpFoundation\Request;
+use Prophecy\Argument;
+use DTL\Symfony\HttpCacheTaggingSubscriber;
+use Symfony\Component\HttpFoundation\Response;
+use FOS\HttpCache\ProxyClient\Symfony;
+use DTL\Symfony\HttpCacheTagging\TagManager;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
+use DTL\Symfony\HttpCacheTagging\TaggingHandler;
+
+class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var TagManager
+     */
+    private $tagManager;
+
+    public function setUp()
+    {
+        $this->tagManager = $this->prophesize(TagManager::class);
+        $this->requestMatcher = $this->prophesize(RequestMatcherInterface::class);
+    }
+
+    public function testHandleTagsNoHeader()
+    {
+        $response = Response::create('', 200, array());
+
+        $this->createHandler(array())->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * When the tags header is in the response It should call the tag manager
+     * to create tags.
+     */
+    public function testHandleTags()
+    {
+        $response = Response::create('test', 200, [
+            'X-Content-Digest' => '1234',
+            'X-Cache-Tags' => json_encode(['one', 'two'])
+        ]);
+        $response->setMaxAge(10);
+
+        $this->tagManager->tagCacheId(['one', 'two'], '1234', 10)->shouldBeCalled();
+
+        $this->createHandler(array())->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * It should throw an exception if the content digest header is not present.
+     *
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Could not find content digest
+     */
+    public function testHandleTagsNoContentDigest()
+    {
+        $response = Response::create('test', 200, [
+            'X-Cache-Tags' => json_encode(['one', 'two'])
+        ]);
+
+        $this->createHandler(array())->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * It should throw an exception if the JSON is invalid.
+     *
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage Could not JSON decode
+     */
+    public function testInvalidJsonEncodedTags()
+    {
+        $digest = 'abcd1234';
+
+        $response = Response::create('response', 200, [
+            'X-Content-Digest' => $digest,
+            'X-Cache-Tags' => 'this ain\'t JSON',
+        ]);
+        $this->createHandler(array())->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * It should invalidate tags from the response.
+     */
+    public function testInvalidateTagsResponse()
+    {
+        $tags = ['one', 'two', 'three'];
+        $response = Response::create('', 200, [
+            'X-Cache-Invalidate-Tags' => json_encode($tags)
+        ]);
+
+        $this->tagManager->invalidateTags($tags)->shouldBeCalledTimes(1);
+
+        $this->createHandler(array())->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * It should invalidate the tags from the request.
+     */
+    public function testInvalidateTagsRequest()
+    {
+        $tags = ['one', 'two', 'three'];
+        $request = Request::create('', 'POST');
+        $request->headers->set('X-Cache-Invalidate-Tags', json_encode($tags));
+
+
+        $this->requestMatcher->matches($request)->willReturn(true);
+        $this->tagManager->invalidateTags($tags)->shouldBeCalledTimes(1);
+
+        $this->createHandler(array())->handleRequest(
+            $request
+        );
+    }
+
+    /**
+     * It should not invalidate tags if the "purge" method is wrong.
+     */
+    public function testInvalidateTagsRequestBadPurgeMethod()
+    {
+        $tags = ['one', 'two', 'three'];
+        $request = Request::create('', 'FOO');
+        $request->headers->set('X-Cache-Invalidate-Tags', json_encode($tags));
+
+        $this->requestMatcher->matches($request)->willReturn(true);
+        $this->tagManager->invalidateTags($tags)->shouldNotBeCalled();
+
+        $this->createHandler(array())->handleRequest(
+            $request
+        );
+    }
+
+    /**
+     * It should not invalidate tags if the request is not allowed.
+     */
+    public function testInvalidateTagsRequestNotAllowed()
+    {
+        $tags = ['one', 'two', 'three'];
+        $request = Request::create('', 'POST');
+        $request->headers->set('X-Cache-Invalidate-Tags', json_encode($tags));
+
+        $this->requestMatcher->matches($request)->willReturn(false);
+        $this->tagManager->invalidateTags($tags)->shouldNotBeCalled();
+
+        $response = $this->createHandler(array())->handleRequest(
+            $request
+        );
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    /**
+     * It should throw an exception if invalid options are given.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Unknown options: "foobar", "1234", valid options: 
+     */
+    public function testInvalidOptions()
+    {
+        $this->createHandler([
+            'tag_encoding' => 'foobar',
+            'foobar' => 'barfoo',
+            '1234' => '5678',
+        ]);
+    }
+
+    /**
+     * It should throw an exception if an invalid encoding strategy is given.
+     *
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid tag encoding option "foobar". It must either be a callable or one of: "json", "comma-separated"
+     */
+    public function testInvalidTagEncoding()
+    {
+        $response = Response::create('test', 200, [
+            'X-Content-Digest' => '1234',
+            'X-Cache-Tags' => json_encode(['one', 'two'])
+        ]);
+
+        $this->createHandler(['tag_encoding' => 'foobar'])->handleResponse(
+            $response
+        );
+    }
+
+    /**
+     * It should encode tags using the given strategy / callable.
+     *
+     * @dataProvider provideTagEncoding
+     */
+    public function testTagEncoding($strategy, $rawTags, $expectedTags)
+    {
+        $response = Response::create('test', 200, [
+            'X-Content-Digest' => '1234',
+            'X-Cache-Tags' => $rawTags
+        ]);
+
+        $this->tagManager->tagCacheId($expectedTags, '1234', null)->shouldBeCalled();
+
+        $this->createHandler([ 'tag_encoding' => $strategy ])->handleResponse(
+            $response
+        );
+    }
+
+    public function provideTagEncoding()
+    {
+        return [
+            [
+                'json',
+                '["one", "two"]',
+                [ 'one', 'two' ],
+            ],
+            [
+                'comma-separated',
+                'one,two,three',
+                [ 'one', 'two', 'three' ],
+            ],
+            [
+                function ($raw) { return [ $raw ]; },
+                'whatever',
+                [ 'whatever' ],
+            ],
+        ];
+    }
+
+
+    private function createHandler($options = [])
+    {
+        return new TaggingHandler(
+            $this->tagManager->reveal(),
+            $this->requestMatcher->reveal(),
+            $options
+        );
+    }
+}

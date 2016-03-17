@@ -1,0 +1,39 @@
+{
+    "name": "dantleech/sf-http-cache-tagging",
+    "type": "library",
+    "description": "Symfony HTTP Cache Tagging middleware",
+    "keywords": [ "http", "caching", "middleware", "symfony" ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniel Leech",
+            "email": "daniel@dantleech.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^5.5.9||^7.0.0",
+        "symfony/http-kernel": "^3.0",
+        "symfony/filesystem": "^3.0"
+    },
+    "require-dev": {
+        "doctrine/cache": "^1.6",
+        "phpunit/phpunit": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "DTL\\Symfony\\HttpCacheTagging\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DTL\\Symfony\\HttpCacheTagging\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
