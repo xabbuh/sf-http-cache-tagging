@@ -1,6 +1,9 @@
 Symfony HTTP Cache Tagging Middleware
 =====================================
 
+[![Build Status](https://travis-ci.org/dantleech/sf-http-cache-tagging.svg?branch=master)](https://travis-ci.org/dantleech/sf-http-cache-tagging)
+[![StyleCI](https://styleci.io/repos/54131442/shield)](https://styleci.io/repos/54131442)
+
 Introduction
 ------------
 
