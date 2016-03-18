@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Glob package.
+ *
+ * (c) Daniel Leech <daniel@dantleech.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DTL\Symfony\HttpCacheTagging\Storage;
 
 use Doctrine\Common\Cache\Cache;
@@ -25,7 +34,7 @@ class DoctrineCache implements StorageInterface
      *       need to serialize the lifetime with the cache entry and store tags
      *       indefintely.
      *
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function tagCacheId(array $tags, $identifier, $lifetime = null)
     {
@@ -37,9 +46,8 @@ class DoctrineCache implements StorageInterface
         }
     }
 
-
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function removeTags(array $tags)
     {
@@ -50,11 +58,11 @@ class DoctrineCache implements StorageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getCacheIds(array $tags)
     {
-        $ret = array();
+        $ret = [];
 
         foreach ($tags as $tag) {
             $encodedIdentifiers = $this->cache->fetch($tag);

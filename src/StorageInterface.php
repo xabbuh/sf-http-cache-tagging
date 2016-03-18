@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Glob package.
+ *
+ * (c) Daniel Leech <daniel@dantleech.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DTL\Symfony\HttpCacheTagging;
 
 /**
@@ -18,11 +27,11 @@ interface StorageInterface
      *
      * @param string[] $tags
      * @param mixed $identifier
-     * @param integer $expiry
+     * @param int $expiry
+     *
      * @return void
      */
     public function tagCacheId(array $tags, $identifier, $expiry = null);
-
 
     /**
      * Remove the given list of tags from the store.
@@ -30,6 +39,7 @@ interface StorageInterface
      * If any of the given tags do not exist, they should be ignored.
      *
      * @param string[]
+     *
      * @return void
      */
     public function removeTags(array $tags);
@@ -38,6 +48,7 @@ interface StorageInterface
      * Return the cache identifiers for the given list of tags.
      *
      * @param string[] $tags
+     *
      * @return mixed[]
      */
     public function getCacheIds(array $tags);

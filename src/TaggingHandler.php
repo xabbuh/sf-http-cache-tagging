@@ -1,13 +1,21 @@
 <?php
 
+/*
+ * This file is part of the Glob package.
+ *
+ * (c) Daniel Leech <daniel@dantleech.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DTL\Symfony\HttpCacheTagging;
 
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use DTL\Symfony\HttpCacheTagging\TagManager;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
-use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The tag handler is responsible for processing Request and Response objects;
@@ -40,11 +48,10 @@ class TaggingHandler
      * @param array $options
      */
     public function __construct(
-        TagManager $manager, 
+        TagManager $manager,
         RequestMatcherInterface $requestMatcher = null,
         array $options = []
-    )
-    {
+    ) {
         $defaultOptions = [
             'purge_method' => 'POST',
             'header_tags' => 'X-Cache-Tags',
@@ -63,10 +70,10 @@ class TaggingHandler
 
         $this->options = array_merge($defaultOptions, $options);
         $this->manager = $manager;
-        $this->requestMatcher = $requestMatcher ?: new RequestMatcher(null, null, null, $this->options['ips'] ?: '127.0.0.1');;
+        $this->requestMatcher = $requestMatcher ?: new RequestMatcher(null, null, null, $this->options['ips'] ?: '127.0.0.1');
     }
 
-    /** 
+    /**
      * Check to see if a tag invlidation request has been made and invalidate
      * the tags in that case.
      *
@@ -89,6 +96,7 @@ class TaggingHandler
 
         if (false === $this->requestMatcher->matches($request)) {
             $response = new Response('', 400);
+
             return $response;
         }
 
@@ -162,8 +170,10 @@ class TaggingHandler
      * is thrown.
      *
      * @param HeaderBag $headers
-     * @return string
+     *
      * @throws RuntimeException
+     *
+     * @return string
      */
     private function getContentDigestFromHeaders(HeaderBag $headers)
     {
@@ -186,8 +196,10 @@ class TaggingHandler
      * If the JSON is invalid then throw a \RuntimeException
      *
      * @param HeaderBag $headers
-     * @return string[]
+     *
      * @throws \RuntimeException
+     *
+     * @return string[]
      */
     private function getTagsFromHeaders(HeaderBag $headers)
     {
@@ -209,7 +221,7 @@ class TaggingHandler
      *
      * If no lifetime can be inferred, then return NULL.
      *
-     * @return integer|null
+     * @return int|null
      */
     private function getExpiryFromResponse(Response $response)
     {
@@ -239,7 +251,7 @@ class TaggingHandler
             return $this->options['tag_encoding']($encodedTags);
         }
 
-        $validEncodings = [ 'json', 'comma-separated' ];
+        $validEncodings = ['json', 'comma-separated'];
         throw new \InvalidArgumentException(sprintf(
             'Invalid tag encoding option "%s". It must either be a callable or one of: "%s"',
             $this->options['tag_encoding'],

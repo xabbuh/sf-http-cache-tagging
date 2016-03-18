@@ -1,15 +1,22 @@
 <?php
 
+/*
+ * This file is part of the Glob package.
+ *
+ * (c) Daniel Leech <daniel@dantleech.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DTL\Symfony\HttpCacheTagging\Tests\Unit;
 
-use Symfony\Component\HttpFoundation\Request;
-use Prophecy\Argument;
-use DTL\Symfony\HttpCacheTaggingSubscriber;
-use Symfony\Component\HttpFoundation\Response;
-use FOS\HttpCache\ProxyClient\Symfony;
-use DTL\Symfony\HttpCacheTagging\TagManager;
-use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use DTL\Symfony\HttpCacheTagging\TaggingHandler;
+use DTL\Symfony\HttpCacheTagging\TagManager;
+use FOS\HttpCache\ProxyClient\Symfony;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,9 +33,9 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleTagsNoHeader()
     {
-        $response = Response::create('', 200, array());
+        $response = Response::create('', 200, []);
 
-        $this->createHandler(array())->handleResponse(
+        $this->createHandler([])->handleResponse(
             $response
         );
     }
@@ -41,13 +48,13 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $response = Response::create('test', 200, [
             'X-Content-Digest' => '1234',
-            'X-Cache-Tags' => json_encode(['one', 'two'])
+            'X-Cache-Tags' => json_encode(['one', 'two']),
         ]);
         $response->setMaxAge(10);
 
         $this->tagManager->tagCacheId(['one', 'two'], '1234', 10)->shouldBeCalled();
 
-        $this->createHandler(array())->handleResponse(
+        $this->createHandler([])->handleResponse(
             $response
         );
     }
@@ -61,10 +68,10 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
     public function testHandleTagsNoContentDigest()
     {
         $response = Response::create('test', 200, [
-            'X-Cache-Tags' => json_encode(['one', 'two'])
+            'X-Cache-Tags' => json_encode(['one', 'two']),
         ]);
 
-        $this->createHandler(array())->handleResponse(
+        $this->createHandler([])->handleResponse(
             $response
         );
     }
@@ -83,7 +90,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
             'X-Content-Digest' => $digest,
             'X-Cache-Tags' => 'this ain\'t JSON',
         ]);
-        $this->createHandler(array())->handleResponse(
+        $this->createHandler([])->handleResponse(
             $response
         );
     }
@@ -95,12 +102,12 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $tags = ['one', 'two', 'three'];
         $response = Response::create('', 200, [
-            'X-Cache-Invalidate-Tags' => json_encode($tags)
+            'X-Cache-Invalidate-Tags' => json_encode($tags),
         ]);
 
         $this->tagManager->invalidateTags($tags)->shouldBeCalledTimes(1);
 
-        $this->createHandler(array())->handleResponse(
+        $this->createHandler([])->handleResponse(
             $response
         );
     }
@@ -114,11 +121,10 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('', 'POST');
         $request->headers->set('X-Cache-Invalidate-Tags', json_encode($tags));
 
-
         $this->requestMatcher->matches($request)->willReturn(true);
         $this->tagManager->invalidateTags($tags)->shouldBeCalledTimes(1);
 
-        $this->createHandler(array())->handleRequest(
+        $this->createHandler([])->handleRequest(
             $request
         );
     }
@@ -135,7 +141,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
         $this->requestMatcher->matches($request)->willReturn(true);
         $this->tagManager->invalidateTags($tags)->shouldNotBeCalled();
 
-        $this->createHandler(array())->handleRequest(
+        $this->createHandler([])->handleRequest(
             $request
         );
     }
@@ -152,7 +158,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
         $this->requestMatcher->matches($request)->willReturn(false);
         $this->tagManager->invalidateTags($tags)->shouldNotBeCalled();
 
-        $response = $this->createHandler(array())->handleRequest(
+        $response = $this->createHandler([])->handleRequest(
             $request
         );
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
@@ -163,7 +169,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
      * It should throw an exception if invalid options are given.
      *
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Unknown options: "foobar", "1234", valid options: 
+     * @expectedExceptionMessage Unknown options: "foobar", "1234", valid options:
      */
     public function testInvalidOptions()
     {
@@ -184,7 +190,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $response = Response::create('test', 200, [
             'X-Content-Digest' => '1234',
-            'X-Cache-Tags' => json_encode(['one', 'two'])
+            'X-Cache-Tags' => json_encode(['one', 'two']),
         ]);
 
         $this->createHandler(['tag_encoding' => 'foobar'])->handleResponse(
@@ -201,12 +207,12 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $response = Response::create('test', 200, [
             'X-Content-Digest' => '1234',
-            'X-Cache-Tags' => $rawTags
+            'X-Cache-Tags' => $rawTags,
         ]);
 
         $this->tagManager->tagCacheId($expectedTags, '1234', null)->shouldBeCalled();
 
-        $this->createHandler([ 'tag_encoding' => $strategy ])->handleResponse(
+        $this->createHandler(['tag_encoding' => $strategy])->handleResponse(
             $response
         );
     }
@@ -217,21 +223,20 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
             [
                 'json',
                 '["one", "two"]',
-                [ 'one', 'two' ],
+                ['one', 'two'],
             ],
             [
                 'comma-separated',
                 'one,two,three',
-                [ 'one', 'two', 'three' ],
+                ['one', 'two', 'three'],
             ],
             [
-                function ($raw) { return [ $raw ]; },
+                function ($raw) { return [$raw]; },
                 'whatever',
-                [ 'whatever' ],
+                ['whatever'],
             ],
         ];
     }
-
 
     private function createHandler($options = [])
     {

@@ -1,19 +1,26 @@
 <?php
 
+/*
+ * This file is part of the Glob package.
+ *
+ * (c) Daniel Leech <daniel@dantleech.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace DTL\Symfony\HttpCacheTagging\Tests\System;
 
+use Doctrine\Common\Cache\ArrayCache;
+use DTL\Symfony\HttpCacheTagging\Storage\DoctrineCache;
+use DTL\Symfony\HttpCacheTagging\TaggingKernel;
+use DTL\Symfony\HttpCacheTagging\TagManager;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\HttpCache\Store;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
-use DTL\Symfony\HttpCacheTagging\TaggingKernel;
-use DTL\Symfony\HttpCacheTagging\Storage\DoctrineCache;
-use Doctrine\Common\Cache\ArrayCache;
-use DTL\Symfony\HttpCacheTagging\TagManager;
-use DTL\Symfony\HttpCacheTagging\TaggingHandler;
+use Symfony\Component\HttpKernel\HttpCache\Store;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class SystemTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +41,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
         $this->tagStorage = new DoctrineCache(new ArrayCache());
         $this->tagManager = new TagManager($this->tagStorage, $this->store);
         $this->application = new TestKernel();
-        $this->httpCache = new HttpCache($this->application, $this->store, null, [ 'debug' => true ]);
+        $this->httpCache = new HttpCache($this->application, $this->store, null, ['debug' => true]);
         $this->taggingKernel = new TaggingKernel($this->httpCache, $this->tagManager);
     }
 
@@ -58,7 +65,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
     public function testStoreTaggedResponse()
     {
         $this->application->setResponse(Response::create('ok', 200, [
-            'X-Cache-Tags' => json_encode([ 'one', 'two' ])
+            'X-Cache-Tags' => json_encode(['one', 'two']),
         ]));
 
         $request = Request::create('/');
@@ -78,7 +85,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
     public function testInvalidateRequest()
     {
         $this->application->setResponse(Response::create('ok', 200, [
-            'X-Cache-Tags' => json_encode([ 'one', 'two' ])
+            'X-Cache-Tags' => json_encode(['one', 'two']),
         ]));
 
         $request = Request::create('/');
@@ -88,7 +95,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $digests);
 
         $request = Request::create('/', 'POST');
-        $request->headers->set('X-Cache-Invalidate-Tags', json_encode([ 'one' ]));
+        $request->headers->set('X-Cache-Invalidate-Tags', json_encode(['one']));
         $this->taggingKernel->handle($request);
 
         $digests = $this->tagStorage->getCacheIds(['one']);
