@@ -109,8 +109,8 @@ class TaggingHandler
 
         $this->manager->invalidateTags($tags);
 
-        $response = new Response(sprintf('Tags invalidated: "%s"', implode('", "', $tags)));
-        $response->setStatusCode(200, 'Purged');
+        $response = new Response(sprintf('Tags processed: "%s"', implode('", "', $tags)));
+        $response->setStatusCode(200, 'Invalidated');
 
         return $response;
     }
