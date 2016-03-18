@@ -59,6 +59,7 @@ class TaggingHandler
             'header_content_digest' => 'X-Content-Digest',
             'tag_encoding' => 'json',
             'ips' => null,
+            'invalidate_from_response' => false,
         ];
 
         if ($diff = array_diff(array_keys($options), array_keys($defaultOptions))) {
@@ -108,7 +109,7 @@ class TaggingHandler
 
         $this->manager->invalidateTags($tags);
 
-        $response = new Response();
+        $response = new Response(sprintf('Tags invalidated: "%s"', implode('", "', $tags)));
         $response->setStatusCode(200, 'Purged');
 
         return $response;
@@ -126,7 +127,7 @@ class TaggingHandler
             $this->storeTagsFromResponse($response);
         }
 
-        if ($response->headers->has($this->options['header_invalidate_tags'])) {
+        if ($this->options['invalidate_from_response'] && $response->headers->has($this->options['header_invalidate_tags'])) {
             $this->invalidateTagsFromResponse($response);
         }
     }
@@ -140,8 +141,7 @@ class TaggingHandler
     {
         $contentDigest = $this->getContentDigestFromHeaders($response->headers);
         $tags = $this->getTagsFromHeaders($response->headers);
-        $lifetime = $this->getExpiryFromResponse($response);
-        $this->manager->tagCacheId($tags, $contentDigest, $lifetime);
+        $this->manager->tagCacheId($tags, $contentDigest);
     }
 
     /**

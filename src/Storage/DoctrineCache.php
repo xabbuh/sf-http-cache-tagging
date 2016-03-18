@@ -52,6 +52,7 @@ class DoctrineCache implements StorageInterface
     public function removeTags(array $tags)
     {
         foreach ($tags as $tag) {
+            $t = $this->cache->fetch($tag);
             // doctrine does not care if the key does not exist.
             $this->cache->delete($tag);
         }

@@ -23,9 +23,9 @@ class TaggingKernel implements HttpKernelInterface
     private $kernel;
     private $handler;
 
-    public function __construct(HttpKernelInterface $kernel, TagManager $tagManager)
+    public function __construct(HttpKernelInterface $kernel, TagManager $tagManager, $options = array())
     {
-        $this->handler = new TaggingHandler($tagManager);
+        $this->handler = new TaggingHandler($tagManager, null, $options);
         $this->kernel = $kernel;
     }
 
