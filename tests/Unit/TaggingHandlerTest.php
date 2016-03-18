@@ -50,9 +50,8 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
             'X-Content-Digest' => '1234',
             'X-Cache-Tags' => json_encode(['one', 'two']),
         ]);
-        $response->setMaxAge(10);
 
-        $this->tagManager->tagCacheId(['one', 'two'], '1234', 10)->shouldBeCalled();
+        $this->tagManager->tagCacheId(['one', 'two'], '1234')->shouldBeCalled();
 
         $this->createHandler([])->handleResponse(
             $response
@@ -107,7 +106,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
 
         $this->tagManager->invalidateTags($tags)->shouldBeCalledTimes(1);
 
-        $this->createHandler([])->handleResponse(
+        $this->createHandler(['invalidate_from_response' => true])->handleResponse(
             $response
         );
     }
