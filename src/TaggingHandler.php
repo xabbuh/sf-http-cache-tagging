@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
+use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
 
 /**
  * The tag handler is responsible for processing Request and Response objects;
@@ -43,12 +44,12 @@ class TaggingHandler
     private $requestMatcher;
 
     /**
-     * @param TagManager $manager
+     * @param TagManagerInterface $manager
      * @param RequestMatcherInterface $requestMatcher
      * @param array $options
      */
     public function __construct(
-        TagManager $manager,
+        TagManagerInterface $manager,
         RequestMatcherInterface $requestMatcher = null,
         array $options = []
     ) {

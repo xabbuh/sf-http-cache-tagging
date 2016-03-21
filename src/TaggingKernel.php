@@ -13,6 +13,7 @@ namespace DTL\Symfony\HttpCacheTagging;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
 
 /**
  * Middleware for adding tagging support to the Symfony
@@ -23,7 +24,7 @@ class TaggingKernel implements HttpKernelInterface
     private $kernel;
     private $handler;
 
-    public function __construct(HttpKernelInterface $kernel, TagManager $tagManager, $options = [])
+    public function __construct(HttpKernelInterface $kernel, TagManagerInterface $tagManager, $options = [])
     {
         $this->handler = new TaggingHandler($tagManager, null, $options);
         $this->kernel = $kernel;

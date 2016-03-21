@@ -9,15 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace DTL\Symfony\HttpCacheTagging;
+namespace DTL\Symfony\HttpCacheTagging\Manager;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\HttpCache\Store;
+use DTL\Symfony\HttpCacheTagging\StorageInterface;
+use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
 
 /**
  * Tag manager for the Symfony HTTP Cache Proxy.
  */
-class TagManager
+class TagManager implements TagManagerInterface
 {
     /**
      * @var StorageInterface
