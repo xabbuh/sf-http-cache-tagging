@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Glob package.
+ * This file is part of the Symfony Http Cache Tagging package.
  *
  * (c) Daniel Leech <daniel@dantleech.com>
  *
@@ -44,7 +44,7 @@ class TaggingHandler
 
     /**
      * @param TagManager $manager
-     * @param RequestMatcherInterface
+     * @param RequestMatcherInterface $requestMatcher
      * @param array $options
      */
     public function __construct(
@@ -81,7 +81,7 @@ class TaggingHandler
      * Will return a Response object if the calling class should return a
      * premature response rather than continue.
      *
-     * @param Request
+     * @param Request $request
      *
      * @return Response|null
      */
@@ -119,7 +119,7 @@ class TaggingHandler
      * Check to see if the response contains tags which should be associated
      * with the cached page.
      *
-     * @param Response
+     * @param Response $response
      */
     public function handleResponse(Response $response)
     {
@@ -135,19 +135,19 @@ class TaggingHandler
     /**
      * Store tags and associate them with the response.
      *
-     * @param Response
+     * @param Response $response
      */
     private function storeTagsFromResponse(Response $response)
     {
         $contentDigest = $this->getContentDigestFromHeaders($response->headers);
         $tags = $this->getTagsFromHeaders($response->headers);
-        $this->manager->tagCacheId($tags, $contentDigest);
+        $this->manager->tagContentDigest($tags, $contentDigest);
     }
 
     /**
      * If the response has tags for invalidation, invalidate them.
      *
-     * @param Response
+     * @param Response $response
      */
     private function invalidateTagsFromResponse(Response $response)
     {

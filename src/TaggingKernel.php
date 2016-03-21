@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Glob package.
+ * This file is part of the Symfony Http Cache Tagging package.
  *
  * (c) Daniel Leech <daniel@dantleech.com>
  *
@@ -29,6 +29,9 @@ class TaggingKernel implements HttpKernelInterface
         $this->kernel = $kernel;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
         if ($response = $this->handler->handleRequest($request)) {
