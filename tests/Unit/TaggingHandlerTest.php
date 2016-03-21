@@ -11,8 +11,8 @@
 
 namespace DTL\Symfony\HttpCacheTagging\Tests\Unit;
 
-use DTL\Symfony\HttpCacheTagging\TaggingHandler;
 use DTL\Symfony\HttpCacheTagging\Manager\TagManager;
+use DTL\Symfony\HttpCacheTagging\TaggingHandler;
 use FOS\HttpCache\ProxyClient\Symfony;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;

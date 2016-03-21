@@ -11,10 +11,10 @@
 
 namespace DTL\Symfony\HttpCacheTagging\Manager;
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\HttpCache\Store;
 use DTL\Symfony\HttpCacheTagging\StorageInterface;
 use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpKernel\HttpCache\Store;
 
 /**
  * Tag manager for the Symfony HTTP Cache Proxy.

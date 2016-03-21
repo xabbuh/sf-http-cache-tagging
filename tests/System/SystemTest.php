@@ -12,9 +12,9 @@
 namespace DTL\Symfony\HttpCacheTagging\Tests\System;
 
 use Doctrine\Common\Cache\ArrayCache;
+use DTL\Symfony\HttpCacheTagging\Manager\TagManager;
 use DTL\Symfony\HttpCacheTagging\Storage\DoctrineCache;
 use DTL\Symfony\HttpCacheTagging\TaggingKernel;
-use DTL\Symfony\HttpCacheTagging\Manager\TagManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

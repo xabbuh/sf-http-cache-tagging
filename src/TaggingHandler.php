@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
-use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
 
 /**
  * The tag handler is responsible for processing Request and Response objects;

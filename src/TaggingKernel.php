@@ -13,7 +13,6 @@ namespace DTL\Symfony\HttpCacheTagging;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use DTL\Symfony\HttpCacheTagging\TagManagerInterface;
 
 /**
  * Middleware for adding tagging support to the Symfony
