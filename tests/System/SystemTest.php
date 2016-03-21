@@ -99,6 +99,7 @@ class SystemTest extends \PHPUnit_Framework_TestCase
         $this->taggingKernel->handle($request);
 
         $digests = $this->tagStorage->getCacheIds(['one']);
+
         $this->assertCount(0, $digests, 'It should have purged the pages tagged "one"');
         $digests = $this->tagStorage->getCacheIds(['two']);
         $this->assertCount(1, $digests, 'It should not have purged the pages tagged "two"');

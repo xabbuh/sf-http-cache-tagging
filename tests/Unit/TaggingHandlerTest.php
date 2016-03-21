@@ -51,7 +51,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
             'X-Cache-Tags' => json_encode(['one', 'two']),
         ]);
 
-        $this->tagManager->tagCacheId(['one', 'two'], '1234')->shouldBeCalled();
+        $this->tagManager->tagContentDigest(['one', 'two'], '1234')->shouldBeCalled();
 
         $this->createHandler([])->handleResponse(
             $response
@@ -209,7 +209,7 @@ class TaggingHandlerTest extends \PHPUnit_Framework_TestCase
             'X-Cache-Tags' => $rawTags,
         ]);
 
-        $this->tagManager->tagCacheId($expectedTags, '1234', null)->shouldBeCalled();
+        $this->tagManager->tagContentDigest($expectedTags, '1234', null)->shouldBeCalled();
 
         $this->createHandler(['tag_encoding' => $strategy])->handleResponse(
             $response

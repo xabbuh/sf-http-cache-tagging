@@ -30,19 +30,15 @@ class DoctrineCache implements StorageInterface
     }
 
     /**
-     * TODO: The lifetime applies not to the tag but to the identifier - we
-     *       need to serialize the lifetime with the cache entry and store tags
-     *       indefintely.
-     *
      * {@inheritdoc}
      */
-    public function tagCacheId(array $tags, $identifier, $lifetime = null)
+    public function tagContentDigest(array $tags, $identifier)
     {
         foreach ($tags as $tag) {
             $identifiers = $this->getCacheIds([$tag]);
             $identifiers[] = $identifier;
             $encodedIdentifiers = json_encode(array_unique($identifiers), true);
-            $this->cache->save($tag, $encodedIdentifiers, $lifetime);
+            $this->cache->save($tag, $encodedIdentifiers);
         }
     }
 

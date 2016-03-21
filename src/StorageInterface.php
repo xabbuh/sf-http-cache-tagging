@@ -19,26 +19,23 @@ interface StorageInterface
 {
     /**
      * Associate a list of tags with the given cache identifier.
-     * The expriry represents the TIL for the cache entry, it might
-     * be the value of the S-MAXAGE header for example.
      *
      * The identifier can be any scalar value which can be associated with a
      * unique HTTP cache entry.
      *
      * @param string[] $tags
      * @param mixed $identifier
-     * @param int $expiry
      *
      * @return void
      */
-    public function tagCacheId(array $tags, $identifier, $expiry = null);
+    public function tagContentDigest(array $tags, $identifier);
 
     /**
      * Remove the given list of tags from the store.
      *
      * If any of the given tags do not exist, they should be ignored.
      *
-     * @param string[]
+     * @param string[] $tags
      *
      * @return void
      */

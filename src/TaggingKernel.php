@@ -29,6 +29,9 @@ class TaggingKernel implements HttpKernelInterface
         $this->kernel = $kernel;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
     {
         if ($response = $this->handler->handleRequest($request)) {

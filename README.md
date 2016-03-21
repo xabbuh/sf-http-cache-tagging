@@ -40,6 +40,12 @@ strategy, and for this you will need the ``doctrine/cache`` package:
 ### Wrapping the kernel
 
 ```php
+use Symfony\Component\HttpKernel\HttpCache\Store;
+use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use DTL\Symfony\HttpCacheTagging\Storage\DoctrineCache;
+use DTL\Symfony\HttpCacheTagging\TagManager;
+use DTL\Symfony\HttpCacheTagging\TaggingKernel;
+
 // your main application
 $app = new TestKernel();
 
@@ -114,9 +120,9 @@ servers.
 Is where you set the invalidation headers in the HTTP response.
 This has the same advantage as direct invalidation, but avoids having to
 inject the tag manager as a service. The ``X-Cache-Invalidate-Tags`` header
-must is expected by default.
+is expected by default.
 
-The response method is probably the simplest:
+The response method is probably the most simple:
 
 ```php
 class MyController

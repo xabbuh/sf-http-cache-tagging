@@ -25,21 +25,19 @@ class DoctrineCacheTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * It should associate a number of tags with a given cache identifier
-     * and with a given expiry time.
+     * It should associate a number of tags with a given cache identifier.
      */
     public function testTagCacheId()
     {
         $identifier = 'abcd';
         $tags = ['one', 'two'];
-        $expiry = 1234;
 
         $this->cache->fetch('one')->willReturn('[]');
         $this->cache->fetch('two')->willReturn('[]');
-        $this->cache->save('one', '["abcd"]', 1234)->shouldBeCalled();
-        $this->cache->save('two', '["abcd"]', 1234)->shouldBeCalled();
+        $this->cache->save('one', '["abcd"]')->shouldBeCalled();
+        $this->cache->save('two', '["abcd"]')->shouldBeCalled();
 
-        $this->storage->tagCacheId($tags, $identifier, $expiry);
+        $this->storage->tagContentDigest($tags, $identifier);
     }
 
     /**
@@ -49,12 +47,11 @@ class DoctrineCacheTest extends \PHPUnit_Framework_TestCase
     {
         $identifier = 'dcba';
         $tags = ['one'];
-        $expiry = 1234;
 
         $this->cache->fetch('one')->willReturn('["abcd"]');
-        $this->cache->save('one', '["abcd","dcba"]', 1234)->shouldBeCalled();
+        $this->cache->save('one', '["abcd","dcba"]')->shouldBeCalled();
 
-        $this->storage->tagCacheId($tags, $identifier, $expiry);
+        $this->storage->tagContentDigest($tags, $identifier);
     }
 
     /**
