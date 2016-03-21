@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Glob package.
+ * This file is part of the Symfony Http Cache Tagging package.
  *
  * (c) Daniel Leech <daniel@dantleech.com>
  *
