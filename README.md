@@ -56,10 +56,10 @@ $httpCache = new HttpCache($app, $store);
 
 // our tag storage strategy
 $tagStorage = new DoctrineCache(new PhpFileCache('/path/to/keep/tags'));
-$tagManager = new TagManager($this->tagStorage, $this->store);
+$tagManager = new TagManager($tagStorage, $store);
 
 // now you can procss the request
-$app = new TaggingKernel($this->httpCache, $this->tagManager);
+$app = new TaggingKernel($httpCache, $tagManager);
 $app->handle(Request::create());
 ```
 
