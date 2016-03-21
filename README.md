@@ -40,21 +40,22 @@ strategy, and for this you will need the ``doctrine/cache`` package:
 ### Wrapping the kernel
 
 ```php
+use Doctrine\Common\Cache\PhpFileCache;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
 use DTL\Symfony\HttpCacheTagging\Storage\DoctrineCache;
-use DTL\Symfony\HttpCacheTagging\TagManager;
+use DTL\Symfony\HttpCacheTagging\Manager\TagManager;
 use DTL\Symfony\HttpCacheTagging\TaggingKernel;
 
 // your main application
 $app = new TestKernel();
 
 // the standard Symfony HTTP cache
-$store = new Store($this->workspaceDir);
+$store = new Store('/path/to/keep/keep/cache');
 $httpCache = new HttpCache($app, $store);
 
 // our tag storage strategy
-$tagStorage = new DoctrineCache(new ArrayCache());
+$tagStorage = new DoctrineCache(new PhpFileCache('/path/to/keep/tags'));
 $tagManager = new TagManager($this->tagStorage, $this->store);
 
 // now you can procss the request

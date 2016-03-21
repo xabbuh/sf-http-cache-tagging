@@ -43,12 +43,12 @@ class TaggingHandler
     private $requestMatcher;
 
     /**
-     * @param TagManager $manager
+     * @param TagManagerInterface $manager
      * @param RequestMatcherInterface $requestMatcher
      * @param array $options
      */
     public function __construct(
-        TagManager $manager,
+        TagManagerInterface $manager,
         RequestMatcherInterface $requestMatcher = null,
         array $options = []
     ) {
