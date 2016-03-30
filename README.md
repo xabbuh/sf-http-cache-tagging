@@ -139,7 +139,7 @@ class MyController
         // update the entity
 
         $response = // get your response
-        $response->headers->set('X-Cache-Tags-Invalidate', json_encode([ $tag ]));
+        $response->headers->set('X-Cache-Invalidate-Tags', json_encode([ $tag ]));
 
         return $response;
     }
@@ -149,6 +149,11 @@ class MyController
 Here we are editing an object which represents a page on your website, we set
 the response header, after the response has been sent any cache entries which
 have the entities tag will be removed.
+
+You will also need to update the kernel wrapping to:
+```php
+$kernel = new TaggingKernel($httpCache, $tagManager, array('invalidate_from_response' => true));
+```
 
 ### Configuration
 
