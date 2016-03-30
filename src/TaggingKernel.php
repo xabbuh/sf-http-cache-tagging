@@ -12,13 +12,15 @@
 namespace DTL\Symfony\HttpCacheTagging;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\TerminableInterface;
 
 /**
  * Middleware for adding tagging support to the Symfony
  * HTTP cache.
  */
-class TaggingKernel implements HttpKernelInterface
+class TaggingKernel implements HttpKernelInterface, TerminableInterface
 {
     private $kernel;
     private $handler;
@@ -43,5 +45,10 @@ class TaggingKernel implements HttpKernelInterface
         $this->handler->handleResponse($response);
 
         return $response;
+    }
+
+    public function terminate(Request $request, Response $response)
+    {
+        $this->kernel->terminate($request, $response);
     }
 }
